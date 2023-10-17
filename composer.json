@@ -1,5 +1,5 @@
 {
-    "name": "check24/newrelic-bundle",
+    "name": "check24-cp/newrelic-bundle",
     "description": "Enhanced interaction with NewRelic from within a Symfony environment, ensuring optimal monitoring and logging for your applications",
     "type": "library",
     "authors": [
