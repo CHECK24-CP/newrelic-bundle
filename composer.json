@@ -1,0 +1,64 @@
+{
+    "name": "check24/newrelic-bundle",
+    "description": "Enhanced interaction with NewRelic from within a Symfony environment, ensuring optimal monitoring and logging for your applications",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Radhi Guennichi",
+            "email": "mohamed.guennichi@check24.de",
+            "homepage": "https://guennichi.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-curl": "*",
+        "ostrolucky/polyfill-newrelic": "^1.0",
+        "psr/log": "^3.0",
+        "symfony/config": "^6.3",
+        "symfony/console": "^6.3",
+        "symfony/dependency-injection": "^6.3",
+        "symfony/framework-bundle": "^6.3",
+        "symfony/http-kernel": "^6.3",
+        "symfony/monolog-bundle": "^3.8",
+        "symfony/uid": "^6.3"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.39",
+        "friendsofphp/php-cs-fixer": "^3.35",
+        "php-http/client-common": "^2.7",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-symfony": "^1.3",
+        "phpunit/phpunit": "^10.4",
+        "symfony/messenger": "^6.3"
+    },
+    "suggest": {
+        "ext-newrelic": "Install the New Relic PHP agent on your system"
+    },
+    "autoload": {
+        "psr-4": {
+            "Check24\\NewRelicBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Check24\\NewRelicBundle\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true
+        }
+    },
+    "scripts": {
+        "lint": [
+            "vendor/bin/phpstan --no-progress",
+            "vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --no-interaction",
+            "@composer normalize --dry-run"
+        ],
+        "lint:fix": [
+            "vendor/bin/php-cs-fixer fix",
+            "@composer normalize"
+        ],
+        "test": "vendor/bin/phpunit"
+    }
+}

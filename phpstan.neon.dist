@@ -1,0 +1,10 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+
+parameters:
+    level: 9
+    paths:
+      - src
+      - tests
+    symfony:
+      containerXmlPath: cache/dev/Tests_Check24_NewRelicBundle_App_TestKernelDevDebugContainer.xml

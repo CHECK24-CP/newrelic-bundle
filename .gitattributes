@@ -1,0 +1,8 @@
+tests/                 export-ignore
+.space.kts             export-ignore
+.editorconfig          export-ignore
+.gitattributes         export-ignore
+.gitignore             export-ignore
+.php-cs-fixer.dist.php export-ignore
+phpstan.neon.dist      export-ignore
+phpunit.xml.dist       export-ignore
