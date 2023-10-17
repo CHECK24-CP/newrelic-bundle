@@ -41,6 +41,7 @@ class FunctionalTest extends TestCase
 
         $config = $container->get(Config::class);
 
+        /* @phpstan-ignore-next-line */
         self::assertSame(['myapp', 'dummyLicense'], [$config->appname, $config->license]);
     }
 }

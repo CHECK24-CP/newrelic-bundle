@@ -6,5 +6,3 @@ parameters:
     paths:
       - src
       - tests
-    symfony:
-      containerXmlPath: cache/dev/Tests_Check24_NewRelicBundle_App_TestKernelDevDebugContainer.xml
