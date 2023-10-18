@@ -38,11 +38,11 @@ readonly class NewRelicMiddleware implements MiddlewareInterface
             $this->config->license,
         );
 
-        $this->interactor->enableBackgroundJob();
-
         $this->interactor->setTransactionName(
             $this->transactionNameStrategy->getName($envelope),
         );
+
+        $this->interactor->enableBackgroundJob();
 
         // This is needed to be able to link logs to the current transaction
         $this->interactor->addCustomParameter('traceId', $this->traceId->__toString());

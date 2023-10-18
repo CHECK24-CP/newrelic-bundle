@@ -17,7 +17,6 @@ use Check24\NewRelicBundle\NewRelic\Config;
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
 use Check24\NewRelicBundle\Trace\TraceId;
 use Check24\NewRelicBundle\TransactionNaming\Request\TransactionNameStrategyInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 readonly class RequestListener
@@ -32,7 +31,6 @@ readonly class RequestListener
         private NewRelicInteractorInterface $interactor,
         private Config $config,
         private TransactionNameStrategyInterface $transactionNameStrategy,
-        private LoggerInterface $logger,
         private TraceId $traceId,
     ) {
     }
@@ -61,12 +59,6 @@ readonly class RequestListener
             );
             // This is needed to be able to link logs to the current transaction
             $this->interactor->addCustomParameter('traceId', $this->traceId->__toString());
-
-            $this->logger->debug('Request info details', [
-                'headers' => $request->headers->all(),
-                'request' => $request->request->all(),
-                'queries' => $request->query->all(),
-            ]);
         }
     }
 }

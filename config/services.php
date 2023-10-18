@@ -46,7 +46,8 @@ return static function (ContainerConfigurator $container): void {
     $services->set('check24.new_relic.interactor', NewRelicInteractor::class);
     $services->set('check24.new_relic.logging_interactor', LoggingInteractorDecorator::class)
         ->arg('$interactor', service('check24.new_relic.interactor'))
-        ->tag('monolog.logger', ['channel' => 'app']);
+        ->arg('$logger', service('logger'))
+        ->tag('monolog.logger', ['channel' => 'newrelic']);
 
     // Transaction naming
     $services->set('check24.new_relic.transaction_name.request.route_name', RouteNameStrategy::class);

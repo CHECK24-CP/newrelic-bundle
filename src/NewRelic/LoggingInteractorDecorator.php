@@ -14,17 +14,13 @@ declare(strict_types=1);
 namespace Check24\NewRelicBundle\NewRelic;
 
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 readonly class LoggingInteractorDecorator implements NewRelicInteractorInterface
 {
-    private LoggerInterface $logger;
-
     public function __construct(
         private NewRelicInteractorInterface $interactor,
-        LoggerInterface $logger = null,
+        private LoggerInterface $logger,
     ) {
-        $this->logger = $logger ?? new NullLogger();
     }
 
     public function setApplicationName(string $name, string $license, bool $xmit = false): bool

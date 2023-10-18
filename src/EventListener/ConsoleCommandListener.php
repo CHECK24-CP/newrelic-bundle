@@ -46,8 +46,8 @@ readonly class ConsoleCommandListener
         if (\in_array($command->getName(), $this->excludedCommands, true)) {
             $this->interactor->ignoreTransaction();
         } else {
-            $this->interactor->enableBackgroundJob();
             $this->interactor->setTransactionName($command->getName() ?? 'Unknown command');
+            $this->interactor->enableBackgroundJob();
 
             // This is needed to be able to link logs to the current transaction
             $this->interactor->addCustomParameter('traceId', $this->traceId->__toString());

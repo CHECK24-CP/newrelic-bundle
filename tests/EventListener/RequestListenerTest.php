@@ -20,7 +20,6 @@ use Check24\NewRelicBundle\Trace\TraceId;
 use Check24\NewRelicBundle\TransactionNaming\Request\TransactionNameStrategyInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
@@ -29,7 +28,6 @@ class RequestListenerTest extends TestCase
     private RequestListener $listener;
     private NewRelicInteractorInterface&MockObject $interactor;
     private TransactionNameStrategyInterface&MockObject $transactionNameStrategy;
-    private LoggerInterface&MockObject $logger;
 
     protected function setUp(): void
     {
@@ -39,7 +37,6 @@ class RequestListenerTest extends TestCase
             $this->interactor = $this->createMock(NewRelicInteractorInterface::class),
             new Config('app', 'license'),
             $this->transactionNameStrategy = $this->createMock(TransactionNameStrategyInterface::class),
-            $this->logger = $this->createMock(LoggerInterface::class),
             new TraceId('some-id'),
         );
     }
@@ -69,14 +66,6 @@ class RequestListenerTest extends TestCase
         $this->interactor->expects(self::once())
             ->method('addCustomParameter')
             ->with('traceId', 'some-id');
-
-        $this->logger->expects(self::once())
-            ->method('debug')
-            ->with('Request info details', [
-                'headers' => $request->headers->all(),
-                'request' => $request->request->all(),
-                'queries' => $request->query->all(),
-            ]);
 
         $this->listener->__invoke($event);
     }
