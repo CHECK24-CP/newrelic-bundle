@@ -49,7 +49,7 @@ class RequestListenerTest extends TestCase
             ->willReturn(true);
         $event->expects(self::once())
             ->method('getRequest')
-            ->willReturn($request = Request::create('/path?foo=bar', 'GET'));
+            ->willReturn(Request::create('/path?foo=bar', 'GET'));
 
         $this->interactor->expects(self::once())
             ->method('setApplicationName')
@@ -78,7 +78,7 @@ class RequestListenerTest extends TestCase
             ->willReturn(true);
         $event->expects(self::once())
             ->method('getRequest')
-            ->willReturn($request = new Request(attributes: ['_route' => 'route.1']));
+            ->willReturn(new Request(attributes: ['_route' => 'route.1']));
 
         $this->interactor->expects(self::once())
             ->method('setApplicationName')
@@ -101,7 +101,30 @@ class RequestListenerTest extends TestCase
             ->willReturn(true);
         $event->expects(self::once())
             ->method('getRequest')
-            ->willReturn($request = Request::create('/path/1?foo=bar', 'GET'));
+            ->willReturn(Request::create('/path/1?foo=bar', 'GET'));
+
+        $this->interactor->expects(self::once())
+            ->method('setApplicationName')
+            ->with('app', 'license', false);
+
+        $this->interactor->expects(self::once())
+            ->method('ignoreTransaction');
+
+        $this->interactor->expects(self::never())
+            ->method('setTransactionName');
+
+        $this->listener->__invoke($event);
+    }
+
+    public function testItIgnoresSymfonyBuiltinRoutes(): void
+    {
+        $event = $this->createMock(RequestEvent::class);
+        $event->expects(self::once())
+            ->method('isMainRequest')
+            ->willReturn(true);
+        $event->expects(self::once())
+            ->method('getRequest')
+            ->willReturn(new Request(attributes: ['_route' => '_internal_route']));
 
         $this->interactor->expects(self::once())
             ->method('setApplicationName')

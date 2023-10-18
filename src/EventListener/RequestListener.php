@@ -49,7 +49,9 @@ readonly class RequestListener
 
         $request = $event->getRequest();
         if (
-            \in_array($request->attributes->get('_route'), $this->excludedRoutes, true)
+            \in_array($route = $request->attributes->getString('_route'), $this->excludedRoutes, true)
+            // Exclude any internal Symfony's builtin routes
+            || str_starts_with($route, '_')
             || \in_array($request->getPathInfo(), $this->excludedPaths, true)
         ) {
             $this->interactor->ignoreTransaction();
