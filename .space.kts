@@ -5,7 +5,7 @@ job("Build") {
         }
     }
 
-    container(image = "check24-cp.registry.jetbrains.space/p/tr/central-docker/devops-php-build:8.2-cli") {
+    container(image = "check24-cp.registry.jetbrains.space/p/dev-ops/central-docker/devops-php-build:8.2-cli") {
         env["COMPOSER_AUTH"] = "{{ project:COMPOSER_AUTH }}"
 
         shellScript {
