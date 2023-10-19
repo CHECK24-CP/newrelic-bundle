@@ -34,7 +34,7 @@ class NewRelicFormatterTest extends TestCase
                 'timestamp' => '2023-10-16T00:00:00.000+02:00',
             ],
             $formatter->format(
-                $this->getRecord(datetime: new \DateTimeImmutable('2023-10-16'), extra: ['trace.id' => 'some-id']),
+                $this->getRecord(datetime: (new \DateTimeImmutable('2023-10-16', new \DateTimeZone('Europe/Berlin'))), extra: ['trace.id' => 'some-id']),
             ),
         );
     }
