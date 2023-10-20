@@ -102,7 +102,7 @@ Update your `config/packages/monolog.yaml` with the following configuration:
 monolog:
     handlers:
         main:
-            type: finger_crossed
+            type: fingers_crossed
             action_level: error
             handler: nested
             excluded_http_codes:
