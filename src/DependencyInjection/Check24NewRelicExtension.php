@@ -16,7 +16,7 @@ namespace Check24\NewRelicBundle\DependencyInjection;
 use Check24\NewRelicBundle\EventListener\ConsoleCommandListener;
 use Check24\NewRelicBundle\EventListener\ConsoleErrorListener;
 use Check24\NewRelicBundle\EventListener\ExceptionListener;
-use Check24\NewRelicBundle\EventListener\RequestListener;
+use Check24\NewRelicBundle\EventSubscriber\RequestSubscriber;
 use Check24\NewRelicBundle\Monolog\Handler\NewRelicHandler;
 use Check24\NewRelicBundle\NewRelic\Config;
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
@@ -71,7 +71,7 @@ class Check24NewRelicExtension extends Extension
             ->setArguments(['$bufferSize' => $config['logging']['buffer_size']])
             ->setAutowired(true);
 
-        $container->getDefinition(RequestListener::class)
+        $container->getDefinition(RequestSubscriber::class)
             ->setArguments([
                 '$excludedRoutes' => $config['excluded_transactions']['routes'],
                 '$excludedPaths' => $config['excluded_transactions']['paths'],

@@ -11,9 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Tests\Check24\NewRelicBundle\EventListener;
+namespace Tests\Check24\NewRelicBundle\EventSubscriber;
 
-use Check24\NewRelicBundle\EventListener\RequestListener;
+use Check24\NewRelicBundle\EventSubscriber\RequestSubscriber;
 use Check24\NewRelicBundle\NewRelic\Config;
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
 use Check24\NewRelicBundle\Trace\TraceId;
@@ -23,22 +23,36 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
-class RequestListenerTest extends TestCase
+class RequestSubscriberTest extends TestCase
 {
-    private RequestListener $listener;
+    private RequestSubscriber $subscriber;
     private NewRelicInteractorInterface&MockObject $interactor;
     private TransactionNameStrategyInterface&MockObject $transactionNameStrategy;
 
     protected function setUp(): void
     {
-        $this->listener = new RequestListener(
+        $this->subscriber = new RequestSubscriber(
             ['route.1'],
             ['/path/1'],
-            $this->interactor = $this->createMock(NewRelicInteractorInterface::class),
             new Config('app', 'license'),
+            $this->interactor = $this->createMock(NewRelicInteractorInterface::class),
             $this->transactionNameStrategy = $this->createMock(TransactionNameStrategyInterface::class),
             new TraceId('some-id'),
         );
+    }
+
+    public function testItInitializeApplication(): void
+    {
+        $event = $this->createMock(RequestEvent::class);
+        $event->expects(self::once())
+            ->method('isMainRequest')
+            ->willReturn(true);
+
+        $this->interactor->expects(self::once())
+            ->method('setApplicationName')
+            ->with('app', 'license', false);
+
+        $this->subscriber->initializeApplication($event);
     }
 
     public function testItSendTransactionToNewRelicAndLogRequestData(): void
@@ -49,11 +63,7 @@ class RequestListenerTest extends TestCase
             ->willReturn(true);
         $event->expects(self::once())
             ->method('getRequest')
-            ->willReturn(Request::create('/path?foo=bar', 'GET'));
-
-        $this->interactor->expects(self::once())
-            ->method('setApplicationName')
-            ->with('app', 'license', false);
+            ->willReturn(Request::create('/path?foo=bar'));
 
         $this->transactionNameStrategy->expects(self::once())
             ->method('getName')
@@ -67,7 +77,7 @@ class RequestListenerTest extends TestCase
             ->method('addCustomParameter')
             ->with('traceId', 'some-id');
 
-        $this->listener->__invoke($event);
+        $this->subscriber->configureTransaction($event);
     }
 
     public function testItIgnoresRoutes(): void
@@ -81,16 +91,12 @@ class RequestListenerTest extends TestCase
             ->willReturn(new Request(attributes: ['_route' => 'route.1']));
 
         $this->interactor->expects(self::once())
-            ->method('setApplicationName')
-            ->with('app', 'license', false);
-
-        $this->interactor->expects(self::once())
             ->method('ignoreTransaction');
 
         $this->interactor->expects(self::never())
             ->method('setTransactionName');
 
-        $this->listener->__invoke($event);
+        $this->subscriber->configureTransaction($event);
     }
 
     public function testItIgnoresPaths(): void
@@ -104,16 +110,12 @@ class RequestListenerTest extends TestCase
             ->willReturn(Request::create('/path/1?foo=bar', 'GET'));
 
         $this->interactor->expects(self::once())
-            ->method('setApplicationName')
-            ->with('app', 'license', false);
-
-        $this->interactor->expects(self::once())
             ->method('ignoreTransaction');
 
         $this->interactor->expects(self::never())
             ->method('setTransactionName');
 
-        $this->listener->__invoke($event);
+        $this->subscriber->configureTransaction($event);
     }
 
     public function testItIgnoresSymfonyBuiltinRoutes(): void
@@ -127,15 +129,11 @@ class RequestListenerTest extends TestCase
             ->willReturn(new Request(attributes: ['_route' => '_internal_route']));
 
         $this->interactor->expects(self::once())
-            ->method('setApplicationName')
-            ->with('app', 'license', false);
-
-        $this->interactor->expects(self::once())
             ->method('ignoreTransaction');
 
         $this->interactor->expects(self::never())
             ->method('setTransactionName');
 
-        $this->listener->__invoke($event);
+        $this->subscriber->configureTransaction($event);
     }
 }

@@ -11,15 +11,16 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Check24\NewRelicBundle\EventListener;
+namespace Check24\NewRelicBundle\EventSubscriber;
 
 use Check24\NewRelicBundle\NewRelic\Config;
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
 use Check24\NewRelicBundle\Trace\TraceId;
 use Check24\NewRelicBundle\TransactionNaming\Request\TransactionNameStrategyInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
-readonly class RequestListener
+readonly class RequestSubscriber implements EventSubscriberInterface
 {
     /**
      * @param array<string> $excludedRoutes
@@ -28,14 +29,24 @@ readonly class RequestListener
     public function __construct(
         private array $excludedRoutes,
         private array $excludedPaths,
-        private NewRelicInteractorInterface $interactor,
         private Config $config,
+        private NewRelicInteractorInterface $interactor,
         private TransactionNameStrategyInterface $transactionNameStrategy,
         private TraceId $traceId,
     ) {
     }
 
-    public function __invoke(RequestEvent $event): void
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            RequestEvent::class => [
+                ['initializeApplication', 255],
+                ['configureTransaction', 31],
+            ],
+        ];
+    }
+
+    public function initializeApplication(RequestEvent $event): void
     {
         if (!$event->isMainRequest()) {
             return;
@@ -46,13 +57,20 @@ readonly class RequestListener
             $this->config->license,
             $this->config->xmit,
         );
+    }
+
+    public function configureTransaction(RequestEvent $event): void
+    {
+        if (!$event->isMainRequest()) {
+            return;
+        }
 
         $request = $event->getRequest();
         if (
             \in_array($route = $request->attributes->getString('_route'), $this->excludedRoutes, true)
+            || \in_array($request->getPathInfo(), $this->excludedPaths, true)
             // Exclude any internal Symfony's builtin routes
             || str_starts_with($route, '_')
-            || \in_array($request->getPathInfo(), $this->excludedPaths, true)
         ) {
             $this->interactor->ignoreTransaction();
         } else {
