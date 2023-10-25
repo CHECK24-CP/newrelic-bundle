@@ -19,6 +19,8 @@ readonly class RouteNameStrategy implements TransactionNameStrategyInterface
 {
     public function getName(Request $request): string
     {
-        return $request->attributes->getString('_route') ?: 'Unknown route';
+        $route = $request->attributes->get('_route');
+
+        return \is_scalar($route) ? (string) $route : 'Unknown route';
     }
 }
