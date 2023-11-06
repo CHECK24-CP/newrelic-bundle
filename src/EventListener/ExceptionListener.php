@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Check24\NewRelicBundle\EventListener;
 
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
+#[AsEventListener(ExceptionEvent::class)]
 readonly class ExceptionListener
 {
     /**

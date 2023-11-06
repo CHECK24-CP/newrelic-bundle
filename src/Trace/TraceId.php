@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Check24\NewRelicBundle\Trace;
 
-readonly class TraceId implements \Stringable
+class TraceId implements \Stringable
 {
     public function __construct(private string $value)
     {
@@ -22,5 +22,10 @@ readonly class TraceId implements \Stringable
     public function __toString(): string
     {
         return $this->value;
+    }
+
+    public function refresh(self $new): void
+    {
+        $this->value = $new->value;
     }
 }

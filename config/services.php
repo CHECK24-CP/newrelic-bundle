@@ -14,6 +14,7 @@ declare(strict_types=1);
 use Check24\NewRelicBundle\EventListener\ConsoleCommandListener;
 use Check24\NewRelicBundle\EventListener\ConsoleErrorListener;
 use Check24\NewRelicBundle\EventListener\ExceptionListener;
+use Check24\NewRelicBundle\EventListener\RefreshTraceIdListener;
 use Check24\NewRelicBundle\EventSubscriber\RequestSubscriber;
 use Check24\NewRelicBundle\Messenger\Middleware\NewRelicMiddleware;
 use Check24\NewRelicBundle\Monolog\Processor\TraceIdProcessor;
@@ -35,13 +36,13 @@ return static function (ContainerConfigurator $container): void {
         ExceptionListener::class,
         ConsoleCommandListener::class,
         ConsoleErrorListener::class,
+        RefreshTraceIdListener::class,
+        RequestSubscriber::class,
     ];
 
     foreach ($listeners as $id) {
-        $services->set($id)->tag('kernel.event_listener')->autowire();
+        $services->set($id)->autowire()->autoconfigure();
     }
-
-    $services->set(RequestSubscriber::class)->autowire()->tag('kernel.event_subscriber');
 
     // Interactor
     $services->set('check24.new_relic.interactor', NewRelicInteractor::class);

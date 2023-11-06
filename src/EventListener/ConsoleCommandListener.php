@@ -17,7 +17,9 @@ use Check24\NewRelicBundle\NewRelic\Config;
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
 use Check24\NewRelicBundle\Trace\TraceId;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
+#[AsEventListener(ConsoleCommandEvent::class)]
 readonly class ConsoleCommandListener
 {
     /**

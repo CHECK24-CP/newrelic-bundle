@@ -15,7 +15,9 @@ namespace Check24\NewRelicBundle\EventListener;
 
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
+#[AsEventListener(ConsoleErrorEvent::class)]
 readonly class ConsoleErrorListener
 {
     /**
