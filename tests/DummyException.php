@@ -13,6 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Check24\NewRelicBundle;
 
-class DummyException extends \RuntimeException
+class DummyException extends \LogicException
 {
 }

@@ -34,11 +34,9 @@ readonly class ExceptionListener
         $exception = $event->getThrowable();
 
         foreach ($this->excludedExceptions as $excludedException) {
-            if (!$exception instanceof $excludedException) {
-                continue;
+            if ($exception instanceof $excludedException) {
+                return;
             }
-
-            return;
         }
 
         $this->interactor->noticeThrowable($exception);
