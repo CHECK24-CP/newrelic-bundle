@@ -132,7 +132,7 @@ framework:
 check24_new_relic:
     # ...
     excluded_transactions:
-        # Messenger command should be excluded to not interfere the transaction started bt Messenger's middleware.
+        # Messenger command should be excluded to not interfere the transaction started by Messenger's middleware.
         commands:
             - 'messenger:consume'
 ```
