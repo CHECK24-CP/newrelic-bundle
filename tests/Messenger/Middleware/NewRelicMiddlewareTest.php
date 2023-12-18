@@ -71,7 +71,7 @@ class NewRelicMiddlewareTest extends TestCase
             ->method('addCustomParameter')
             ->with('traceId', 'some-id');
 
-        $this->interactor->expects(self::once())
+        $this->interactor->expects(self::exactly(2))
             ->method('endTransaction');
 
         $this->middleware->handle($envelope, new StackMiddleware());
