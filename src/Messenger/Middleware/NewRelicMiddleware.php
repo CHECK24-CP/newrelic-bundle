@@ -33,6 +33,8 @@ readonly class NewRelicMiddleware implements MiddlewareInterface
 
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {
+        $this->interactor->endTransaction();
+
         $this->interactor->startTransaction(
             $this->config->appname,
             $this->config->license,

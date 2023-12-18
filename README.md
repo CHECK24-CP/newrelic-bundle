@@ -128,14 +128,5 @@ framework:
                     - check24.new_relic.messenger_middleware
 ```
 
-```yaml
-check24_new_relic:
-    # ...
-    excluded_transactions:
-        # Messenger command should be excluded to not interfere the transaction started by Messenger's middleware.
-        commands:
-            - 'messenger:consume'
-```
-
 Now the bundle should be able to report each consumed message as a separate transaction, 
 using the message name (see Configuration/Transaction Naming section) as the transaction name.
