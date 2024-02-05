@@ -21,6 +21,8 @@ use Check24\NewRelicBundle\TransactionNaming\Messenger\TransactionNameStrategyIn
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
+use Symfony\Component\Messenger\Middleware\StackInterface;
 use Symfony\Component\Messenger\Middleware\StackMiddleware;
 use Tests\Check24\NewRelicBundle\TransactionNaming\Messenger\DummyMessage;
 
@@ -69,5 +71,22 @@ class NewRelicMiddlewareTest extends TestCase
             ->method('endTransaction');
 
         $this->middleware->handle($envelope, new StackMiddleware());
+    }
+
+    public function testItSendsWrappedExceptionToNewRelic(): void
+    {
+        self::expectException(HandlerFailedException::class);
+        self::expectExceptionMessage('Handling "Tests\Check24\NewRelicBundle\TransactionNaming\Messenger\DummyMessage" failed: OG error');
+
+        $this->interactor->expects(self::once())
+            ->method('noticeThrowable')
+            ->with($originalException = new \Exception('OG error'));
+        $stack = $this->createMock(StackInterface::class);
+        $stack->expects(self::once())
+            ->method('next')
+            ->willThrowException(
+                new HandlerFailedException($envelope = new Envelope(new DummyMessage()), [$originalException]),
+            );
+        $this->middleware->handle($envelope, $stack);
     }
 }
