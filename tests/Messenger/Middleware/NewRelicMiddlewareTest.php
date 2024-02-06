@@ -18,8 +18,11 @@ use Check24\NewRelicBundle\NewRelic\Config;
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
 use Check24\NewRelicBundle\Trace\TraceId;
 use Check24\NewRelicBundle\TransactionNaming\Messenger\TransactionNameStrategyInterface;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Rule\InvokedCount;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\Middleware\StackInterface;
@@ -40,6 +43,7 @@ class NewRelicMiddlewareTest extends TestCase
             new TraceId('some-id'),
             $this->interactor = $this->createMock(NewRelicInteractorInterface::class),
             $this->transactionNameStrategy = $this->createMock(TransactionNameStrategyInterface::class),
+            [NotFoundHttpException::class],
         );
     }
 
@@ -73,19 +77,19 @@ class NewRelicMiddlewareTest extends TestCase
         $this->middleware->handle($envelope, new StackMiddleware());
     }
 
-    public function testItSendsWrappedExceptionToNewRelic(): void
+    #[TestWith([new \Exception('OG error'), new InvokedCount(1)])]
+    #[TestWith([new NotFoundHttpException('OG error'), new InvokedCount(0)])]
+    public function testSendingWrappedExceptionToNewRelic(\Exception $exception, InvokedCount $invokedCount): void
     {
         self::expectException(HandlerFailedException::class);
         self::expectExceptionMessage('Handling "Tests\Check24\NewRelicBundle\TransactionNaming\Messenger\DummyMessage" failed: OG error');
 
-        $this->interactor->expects(self::once())
-            ->method('noticeThrowable')
-            ->with($originalException = new \Exception('OG error'));
+        $this->interactor->expects($invokedCount)->method('noticeThrowable')->with($exception);
         $stack = $this->createMock(StackInterface::class);
         $stack->expects(self::once())
             ->method('next')
             ->willThrowException(
-                new HandlerFailedException($envelope = new Envelope(new DummyMessage()), [$originalException]),
+                new HandlerFailedException($envelope = new Envelope(new DummyMessage()), [$exception]),
             );
         $this->middleware->handle($envelope, $stack);
     }
