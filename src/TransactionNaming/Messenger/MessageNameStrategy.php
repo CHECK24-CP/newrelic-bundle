@@ -19,6 +19,6 @@ readonly class MessageNameStrategy implements TransactionNameStrategyInterface
 {
     public function getName(Envelope $envelope): string
     {
-        return substr($class = $envelope->getMessage()::class, strrpos($class, '\\') + 1);
+        return substr((string) strrchr('\\' . $envelope->getMessage()::class, '\\'), 1);
     }
 }
