@@ -100,7 +100,7 @@ readonly class LoggingInteractorDecorator implements NewRelicInteractorInterface
         return $this->interactor->disableAutoRUM();
     }
 
-    public function noticeThrowable(\Throwable $e, string $message = null): void
+    public function noticeThrowable(\Throwable $e, ?string $message = null): void
     {
         $this->logger->debug('Sending exception to New Relic', [
             'message' => $message,

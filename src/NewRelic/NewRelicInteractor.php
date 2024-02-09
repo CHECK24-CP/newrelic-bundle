@@ -70,7 +70,7 @@ readonly class NewRelicInteractor implements NewRelicInteractorInterface
         return newrelic_disable_autorum();
     }
 
-    public function noticeThrowable(\Throwable $e, string $message = null): void
+    public function noticeThrowable(\Throwable $e, ?string $message = null): void
     {
         newrelic_notice_error($message ?: $e->getMessage(), $e);
     }
