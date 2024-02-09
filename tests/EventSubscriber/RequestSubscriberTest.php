@@ -117,23 +117,4 @@ class RequestSubscriberTest extends TestCase
 
         $this->subscriber->configureTransaction($event);
     }
-
-    public function testItIgnoresSymfonyBuiltinRoutes(): void
-    {
-        $event = $this->createMock(RequestEvent::class);
-        $event->expects(self::once())
-            ->method('isMainRequest')
-            ->willReturn(true);
-        $event->expects(self::once())
-            ->method('getRequest')
-            ->willReturn(new Request(attributes: ['_route' => '_internal_route']));
-
-        $this->interactor->expects(self::once())
-            ->method('ignoreTransaction');
-
-        $this->interactor->expects(self::never())
-            ->method('setTransactionName');
-
-        $this->subscriber->configureTransaction($event);
-    }
 }

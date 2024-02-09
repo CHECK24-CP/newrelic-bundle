@@ -72,8 +72,6 @@ readonly class RequestSubscriber implements EventSubscriberInterface
         if (
             \in_array($route, $this->excludedRoutes, true)
             || \in_array($request->getPathInfo(), $this->excludedPaths, true)
-            // Exclude any internal Symfony's builtin routes
-            || str_starts_with($route, '_')
         ) {
             $this->interactor->ignoreTransaction();
         } else {

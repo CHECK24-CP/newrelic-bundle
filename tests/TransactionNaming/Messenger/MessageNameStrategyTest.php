@@ -14,15 +14,16 @@ declare(strict_types=1);
 namespace Tests\Check24\NewRelicBundle\TransactionNaming\Messenger;
 
 use Check24\NewRelicBundle\TransactionNaming\Messenger\MessageNameStrategy;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 
-class ShortMessageClassnameStrategyTest extends TestCase
+class MessageNameStrategyTest extends TestCase
 {
-    public function testItReturnsShortMessageClassname(): void
+    #[TestWith(['DummyMessage', new DummyMessage()])]
+    #[TestWith(['stdClass', new \stdClass()])]
+    public function testItReturnsShortMessageClassname(string $expectedName, object $message): void
     {
-        $strategy = new MessageNameStrategy();
-
-        self::assertSame('DummyMessage', $strategy->getName(new Envelope(new DummyMessage())));
+        self::assertSame($expectedName, (new MessageNameStrategy())->getName(new Envelope($message)));
     }
 }

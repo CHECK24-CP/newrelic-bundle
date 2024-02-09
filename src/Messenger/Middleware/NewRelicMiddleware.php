@@ -18,16 +18,19 @@ use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
 use Check24\NewRelicBundle\Trace\TraceId;
 use Check24\NewRelicBundle\TransactionNaming\Messenger\TransactionNameStrategyInterface;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Exception\WrappedExceptionsInterface;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 
 readonly class NewRelicMiddleware implements MiddlewareInterface
 {
+    /** @param list<class-string<\Throwable>> $excludedExceptions */
     public function __construct(
         private Config $config,
         private TraceId $traceId,
         private NewRelicInteractorInterface $interactor,
         private TransactionNameStrategyInterface $transactionNameStrategy,
+        private array $excludedExceptions = [],
     ) {
     }
 
@@ -49,6 +52,19 @@ readonly class NewRelicMiddleware implements MiddlewareInterface
 
         try {
             return $stack->next()->handle($envelope, $stack);
+        } catch (\Throwable $exception) {
+            $wrappedExceptions = $exception instanceof WrappedExceptionsInterface ? $exception->getWrappedExceptions() : [$exception];
+            foreach ($wrappedExceptions as $wrappedException) {
+                foreach ($this->excludedExceptions as $excludedException) {
+                    if ($wrappedException instanceof $excludedException) {
+                        throw $exception;
+                    }
+                }
+            }
+            // Mark current transaction as error, but ensure NR groups it by OG exception and not wrapped one when possible
+            $this->interactor->noticeThrowable(1 === \count($wrappedExceptions) ? reset($wrappedExceptions) : $exception);
+
+            throw $exception;
         } finally {
             $this->interactor->endTransaction();
         }

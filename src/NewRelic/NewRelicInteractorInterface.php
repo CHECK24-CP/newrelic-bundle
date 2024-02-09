@@ -98,7 +98,7 @@ interface NewRelicInteractorInterface
      *
      * {@link https://docs.newrelic.com/docs/agents/php-agent/php-agent-api/newrelic_notice_error}
      */
-    public function noticeThrowable(\Throwable $e, string $message = null): void;
+    public function noticeThrowable(\Throwable $e, ?string $message = null): void;
 
     /**
      * {@link https://docs.newrelic.com/docs/agents/php-agent/php-agent-api/newrelic_background_job}.
