@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Check24\NewRelicBundle;
 
+use Check24\NewRelicBundle\EventListener\ExceptionListener;
 use Check24\NewRelicBundle\NewRelic\Config;
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractor;
 use Check24\NewRelicBundle\NewRelic\NewRelicInteractorInterface;
@@ -38,6 +39,7 @@ class FunctionalTest extends TestCase
         self::assertInstanceOf(TraceUuidFactory::class, $container->get(TraceIdFactoryInterface::class));
         self::assertInstanceOf(RouteNameStrategy::class, $container->get(RequestTransactionNameStrategyInterface::class));
         self::assertInstanceOf(MessageNameStrategy::class, $container->get(MessengerTransactionNameStrategyInterface::class));
+        self::assertInstanceOf(ExceptionListener::class, $container->get(ExceptionListener::class));
 
         $config = $container->get(Config::class);
 

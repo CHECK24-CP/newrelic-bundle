@@ -16,6 +16,7 @@ namespace Tests\Check24\NewRelicBundle\App;
 use Check24\NewRelicBundle\Check24NewRelicBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
@@ -29,6 +30,7 @@ class TestKernel extends Kernel
             new FrameworkBundle(),
             new MonologBundle(),
             new Check24NewRelicBundle(),
+            new SecurityBundle(),
         ];
     }
 
@@ -46,6 +48,7 @@ class TestKernel extends Kernel
                         ],
                     ],
                 ],
+                'router' => ['resource' => 'kernel::loadRoutes', 'type' => 'service', 'utf8' => true],
             ]);
 
             $container->loadFromExtension('check24_new_relic', [
@@ -75,6 +78,10 @@ class TestKernel extends Kernel
                         'id' => 'check24.new_relic.monolog_handler',
                     ],
                 ],
+            ]);
+            $container->loadFromExtension('security', [
+                'providers' => ['users_in_memory' => ['memory' => null]],
+                'firewalls' => ['main' => ['provider' => 'users_in_memory']],
             ]);
         });
     }
