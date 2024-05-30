@@ -15,17 +15,17 @@ namespace Check24\NewRelicBundle\Trace;
 
 class TraceId implements \Stringable
 {
-    public function __construct(private string $value)
+    public function __construct(private string $fallbackValue)
     {
     }
 
     public function __toString(): string
     {
-        return $this->value;
+        return newrelic_get_trace_metadata()['trace_id'] ?? $this->fallbackValue;
     }
 
     public function refresh(self $new): void
     {
-        $this->value = $new->value;
+        $this->fallbackValue = $new->fallbackValue;
     }
 }
