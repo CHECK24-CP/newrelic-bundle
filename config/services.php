@@ -28,6 +28,8 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
+use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
+
 return static function (ContainerConfigurator $container): void {
     $services = $container->services();
 
@@ -57,7 +59,9 @@ return static function (ContainerConfigurator $container): void {
     $services->set('check24.new_relic.transaction_name.messenger.message_name', MessageNameStrategy::class);
 
     // Messenger
-    $services->set('check24.new_relic.messenger_middleware', NewRelicMiddleware::class)->autowire();
+    if (interface_exists(MiddlewareInterface::class)) {
+        $services->set('check24.new_relic.messenger_middleware', NewRelicMiddleware::class)->autowire();
+    }
 
     // Trace ID
     $services->set('check24.new_relic.trace_id.uuid_factory', TraceUuidFactory::class)
