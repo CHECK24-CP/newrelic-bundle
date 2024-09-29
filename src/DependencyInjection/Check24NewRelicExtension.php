@@ -85,7 +85,9 @@ class Check24NewRelicExtension extends Extension
 
         $container->getDefinition(ConsoleErrorListener::class)
             ->setArguments(['$excludedExceptions' => $config['excluded_exceptions']]);
-        $container->getDefinition('check24.new_relic.messenger_middleware')
-            ->setArguments(['$excludedExceptions' => $config['excluded_exceptions']]);
+        if ($container->hasDefinition('check24.new_relic.messenger_middleware')) {
+            $container->getDefinition('check24.new_relic.messenger_middleware')
+                ->setArguments(['$excludedExceptions' => $config['excluded_exceptions']]);
+        }
     }
 }
